@@ -1,6 +1,6 @@
 import { chromium } from "playwright"
 
-async function main () {
+async function main() {
     const browser = await chromium.launch({
         headless: false,
     });
@@ -11,19 +11,37 @@ async function main () {
 
     await page.pause();
 
-    const links = await page.locator(
-        "a.o-statsContent__tableTitleLink"
-    ).all();
+    const rows = await page.locator("tr").all();
 
-    console.log("件数:", links.length);
+    const articles = [];
 
-    for (const link of links) {
+    for (const row of rows) {
+        const link = row.locator("a.o-statsContent__tableTitleLink");
+
+        if ((await link.count()) === 0) continue;
+
         const title = await link.innerText();
         const href = await link.getAttribute("href");
 
-        console.log({
+        const articleId = href?.split("/n/")[1];
+
+        const viewsText = await row
+            .locator(".o-statsContent__tableStat--type_view")
+            .innerText();
+
+        const likesText = await row
+            .locator(".o-statsContent__tableStat--type_suki")
+            .innerText();
+
+        const views = Number(viewsText);
+        const likes = Number(likesText);
+
+        articles.push({
+            articleId,
             title,
             href,
+            views,
+            likes,
         });
     }
 
