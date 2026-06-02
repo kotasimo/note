@@ -45,6 +45,9 @@ async function main() {
         });
     }
 
+    console.log(articles);
+
+
     await browser.close();
 }
 
