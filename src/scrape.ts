@@ -1,4 +1,5 @@
 import { chromium } from "playwright"
+import fs from "fs";
 
 async function main() {
     const browser = await chromium.launch({
@@ -46,6 +47,18 @@ async function main() {
     }
 
     console.log(articles);
+
+    const snapshot = {
+        capturedAt: new Date().toISOString(),
+        articles,
+    };
+
+    fs.writeFileSync(
+        "snapshot.json",
+        JSON.stringify(snapshot, null, 2)
+    );
+
+    console.log("snapshot.json に保存しました");
 
 
     await browser.close();
