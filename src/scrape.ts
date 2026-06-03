@@ -1,67 +1,69 @@
-import { chromium } from "playwright"
+import { chromium } from "playwright";
 import fs from "fs";
 
 async function main() {
-    const browser = await chromium.launch({
-        headless: false,
+  const browser = await chromium.launch({
+    headless: false,
+  });
+
+  const page = await browser.newPage();
+
+  await page.goto("https://note.com");
+
+  await page.pause();
+
+  const rows = await page.locator("tr").all();
+
+  const articles = [];
+
+  for (const row of rows) {
+    const link = row.locator("a.o-statsContent__tableTitleLink");
+
+    if ((await link.count()) === 0) continue;
+
+    const title = await link.innerText();
+    const href = await link.getAttribute("href");
+
+    const articleId = href?.split("/n/")[1];
+
+    const viewsText = await row
+      .locator(".o-statsContent__tableStat--type_view")
+      .innerText();
+
+    const likesText = await row
+      .locator(".o-statsContent__tableStat--type_suki")
+      .innerText();
+
+    const views = Number(viewsText);
+    const likes = Number(likesText);
+
+    articles.push({
+      articleId,
+      title,
+      href,
+      views,
+      likes,
     });
+  }
 
-    const page = await browser.newPage();
+  // console.log(articles);
 
-    await page.goto("https://note.com");
+  const snapshot = {
+    capturedAt: new Date().toISOString(),
+    articles,
+  };
 
-    await page.pause();
+  if (!fs.existsSync("data")) {
+    fs.mkdirSync("data");
+  }
 
-    const rows = await page.locator("tr").all();
+  const fileName = `data/${new Date().toISOString().replace(/:/g, "-")}.json`;
 
-    const articles = [];
+  fs.writeFileSync(fileName, JSON.stringify(snapshot, null, 2));
 
-    for (const row of rows) {
-        const link = row.locator("a.o-statsContent__tableTitleLink");
+  console.log(`${fileName} に保存しました`);
 
-        if ((await link.count()) === 0) continue;
-
-        const title = await link.innerText();
-        const href = await link.getAttribute("href");
-
-        const articleId = href?.split("/n/")[1];
-
-        const viewsText = await row
-            .locator(".o-statsContent__tableStat--type_view")
-            .innerText();
-
-        const likesText = await row
-            .locator(".o-statsContent__tableStat--type_suki")
-            .innerText();
-
-        const views = Number(viewsText);
-        const likes = Number(likesText);
-
-        articles.push({
-            articleId,
-            title,
-            href,
-            views,
-            likes,
-        });
-    }
-
-    console.log(articles);
-
-    const snapshot = {
-        capturedAt: new Date().toISOString(),
-        articles,
-    };
-
-    fs.writeFileSync(
-        "snapshot.json",
-        JSON.stringify(snapshot, null, 2)
-    );
-
-    console.log("snapshot.json に保存しました");
-
-
-    await browser.close();
+  await browser.close();
 }
 
 main();
