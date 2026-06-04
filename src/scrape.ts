@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { supabase } from "./supabase.js";
+import { supabase } from "./supabaseServer.js";
 import fs from "fs";
 
 async function main() {
