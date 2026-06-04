@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { supabase } from "./supabase.js";
 import fs from "fs";
 
 async function main() {
@@ -52,6 +53,21 @@ async function main() {
     capturedAt: new Date().toISOString(),
     articles,
   };
+
+  const rowsForDb = articles.map((article) => ({
+    captured_at: new Date().toISOString(),
+    article_id: article.articleId,
+    title: article.title,
+    href: article.href,
+    views: article.views,
+    likes: article.likes,
+  }));
+
+  const { error } = await supabase
+    .from("note_article_snapshots")
+    .insert(rowsForDb);
+
+  console.log(error);
 
   if (!fs.existsSync("data")) {
     fs.mkdirSync("data");
