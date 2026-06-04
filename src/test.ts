@@ -1,12 +1,19 @@
 import { supabase } from "./supabase.js";
 
 async function main() {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("note_article_snapshots")
-    .select("*")
-    .limit(1);
-
-  console.log(data);
+    .insert([
+      {
+        captured_at: new Date().toISOString(),
+        article_id: "test",
+        title: "テスト記事",
+        href: "/test",
+        views: 123,
+        likes: 5,
+      },
+    ])
+    
   console.log(error);
 }
 
