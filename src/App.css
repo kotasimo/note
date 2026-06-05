@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  background: #f6f8f9;
+  color: #0f172a;
+  font-family: system-ui, sans-serif;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0 0 32px;
+}
+
+.summary {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.summary-card {
+  width: 170px;
+  height: 120px;
+  background: #f5f8fa;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.icon,
+.summary-number {
+  color: #00856f;
+}
+
+.icon.like,
+.summary-number.like,
+.article-table .like {
+  color: #e23b62;
+}
+
+.summary-number {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.summary-label {
+  font-size: 13px;
+}
+
+.article-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.article-table th {
+  background: #f4f7f9;
+  text-align: left;
+  padding: 12px 8px;
+}
+
+.article-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 8px;
+}
+
+.article-table th:nth-child(2),
+.article-table th:nth-child(3),
+.article-table td:nth-child(2),
+.article-table td:nth-child(3) {
+  text-align: center;
+  width: 80px;
+}
+
+.article-table tr {
+  cursor: pointer;
+}
+
+.article-table tr:hover {
+  background: #f8fafc;
+}
+
+.title {
+  font-weight: 700;
+}
+
+.history {
+  margin-top: 32px;
+  padding: 16px;
+}
+
+.page {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  padding: 24px 40px;
+}
+
+.left {
+  width: 560px;
+}
+
+.right {
+  flex: 1;
+  min-height: 400px;
+  padding: 24px;
+  background: #f6f8f9;
+  border-radius: 12px;
+  position: sticky;
+  top: 24px;
+}
