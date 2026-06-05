@@ -5,8 +5,12 @@ import "./App.css";
 
 function App() {
   const [snapshots, setSnapshots] = useState<any[]>([]);
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
+    null,
+  );
   const [history, setHistory] = useState<any[]>([]);
+  const [isScraping, setIsScraping] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -32,7 +36,6 @@ function App() {
       articles.sort((a, b) => b.views - a.views);
 
       setSnapshots(articles);
-
     }
 
     loadData();
@@ -60,6 +63,32 @@ function App() {
     <main className="page">
       <section className="left">
         <h1>noteanalys</h1>
+
+        <button
+          disabled={isScraping}
+          onClick={async () => {
+            setIsScraping(true);
+            setMessage("取得中...");
+
+            try {
+              const res = await fetch("http://localhost:3001/scrape", {
+                method: "POST",
+              });
+
+              const result = await res.json();
+
+              setMessage(result.message);
+            } catch (error) {
+              setMessage("エラーが発生しました");
+            }
+
+            setIsScraping(false);
+          }}
+        >
+          {isScraping ? "取得中..." : "データ取得"}
+        </button>
+
+        {message && <p>{message}</p>}
 
         <div className="summary">
           <div className="summary-card">
@@ -96,7 +125,6 @@ function App() {
         </table>
       </section>
 
-
       <aside className="right">
         {history.length > 0 ? (
           <>
@@ -110,8 +138,7 @@ function App() {
                     day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
-                  })}
-                  {" "}
+                  })}{" "}
                   {item.views}
                 </li>
               ))}
@@ -128,5 +155,5 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

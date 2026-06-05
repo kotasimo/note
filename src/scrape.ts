@@ -7,11 +7,33 @@ async function main() {
     headless: false,
   });
 
-  const page = await browser.newPage();
+  const context = await browser.newContext({
+    storageState: "auth.json",
+  });
 
-  await page.goto("https://note.com");
+  const page = await context.newPage();
 
-  await page.pause();
+  await page.goto("https://note.com/sitesettings/stats");
+  await page.waitForLoadState("networkidle");
+
+  for (let i = 0; i < 10; i++) {
+    const before = await page.locator("tr").count();
+
+    const moreButton = page.getByRole("button", { name: "もっとみる" });
+
+    if ((await moreButton.count()) === 0) {
+      break;
+    }
+
+    await moreButton.click();
+    await page.waitForTimeout(1500);
+
+    const after = await page.locator("tr").count();
+
+    if (after === before) {
+      break;
+    }
+  }
 
   const noteUpdatedText = await page
     .locator("text=最新集計時刻")
