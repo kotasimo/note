@@ -1,31 +1,26 @@
 import express from "express";
 import cors from "cors";
-import { exec } from "child_process";
+import { main } from "./scrape.js";
 
 const app = express();
 
 app.use(cors());
 
-app.post("/scrape", (req, res) => {
+app.post("/scrape", async (req, res) => {
   console.log("scrape開始");
 
-  exec("npx tsx src/scrape.ts", (error, stdout, stderr) => {
-    if (error) {
-      console.error(stderr);
-      res.status(500).json({
-        ok: false,
-        message: stderr,
-      });
-      return;
-    }
+  try {
+    const result = await main();
 
-    console.log(stdout);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
 
-    res.json({
-      ok: true,
-      message: stdout,
+    res.status(500).json({
+      ok: false,
+      message: "scrape失敗",
     });
-  });
+  }
 });
 
 app.listen(3001, () => {

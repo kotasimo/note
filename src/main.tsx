@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { supabase } from "./supabase.js";
 import "./App.css";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 function App() {
   const [snapshots, setSnapshots] = useState<any[]>([]);
@@ -130,19 +138,54 @@ function App() {
           <>
             <h2>{history[0].title}</h2>
 
-            <ul>
-              {history.map((item) => (
-                <li key={item.id}>
-                  {new Date(item.captured_at).toLocaleString("ja-JP", {
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  {item.views}
-                </li>
-              ))}
-            </ul>
+            <LineChart width={500} height={260} data={history}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="note_updated_text"
+                tickFormatter={(value) => value.replace("最新集計時刻 ", "")}
+              />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="views" />
+            </LineChart>
+
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>時刻</th>
+                  <th>ビュー</th>
+                  <th>Δ</th>
+                  <th>スキ</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {history.map((item, index) => {
+                  const previous = history[index - 1];
+
+                  const delta = previous ? item.views - previous.views : null;
+
+                  return (
+                    <tr key={item.id}>
+                      <td>
+                        {new Date(item.captured_at).toLocaleString("ja-JP", {
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+
+                      <td>{item.views}</td>
+
+                      <td>{delta === null ? "-" : `+${delta}`}</td>
+
+                      <td>{item.likes}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </>
         ) : (
           <p>記事を選択してください</p>

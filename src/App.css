@@ -108,3 +108,29 @@ h1 {
   position: sticky;
   top: 24px;
 }
+
+.history-table {
+  margin-top: 24px;
+  border-collapse: collapse;
+  width: 500px;
+  font-size: 15px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.history-table th {
+  font-weight: 700;
+  color: #555;
+}
+
+
+.history-table td:nth-child(2),
+.history-table td:nth-child(3),
+.history-table td:nth-child(4) {
+  text-align: right;
+}

@@ -87,8 +87,15 @@ async function main() {
   if (latestSnapshot?.note_updated_text === noteUpdatedText) {
     console.log("note側の集計時刻が変わっていないので保存しません");
     await browser.close();
-    return;
+
+    return {
+      saved: false,
+      message: "note側の集計時刻が変わっていないため保存しませんでした",
+      noteUpdatedText,
+      articleCount: articles.length,
+    };
   }
+
   const snapshot = {
     capturedAt: new Date().toISOString(),
     articles,
@@ -121,6 +128,13 @@ async function main() {
   console.log(`${fileName} に保存しました`);
 
   await browser.close();
+
+  return {
+    saved: true,
+    message: `${articles.length}件の記事データを保存しました`,
+    noteUpdatedText,
+    articleCount: articles.length,
+  };
 }
 
-main();
+export { main };
